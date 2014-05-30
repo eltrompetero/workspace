@@ -22,6 +22,18 @@ def save_plot_pickle(fname,vars,prefix='plotting/'):
     pickle.dump(d,open(prefix+fname,'wb'))
     return
 
+def add_to_pickle(v,fname):
+    """
+        Add elements in dictionary to existing pickle.
+    2014-05-30
+    """
+    import cPickle as pickle
+    data = pickle.load(fname)
+    for key in v.keys():
+        data[key] = v[key]
+    pickle.dump(data,open(fname,'wb'))
+    return
+
 def load_pickle(dir,squeeze_me=True,variable_names={}):
     """
         Load variables in pickle to global workspace using keys as variable names.
