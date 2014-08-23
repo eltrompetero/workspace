@@ -25,11 +25,19 @@ def save_plot_pickle(fname,vars,prefix='plotting/'):
 def add_to_pickle(v,fname):
     """
         Add elements in dictionary to existing pickle.
-    2014-05-30
+    2014-08-23
     """
     import cPickle as pickle
-    data = pickle.load(fname)
+    import warnings
+
+    try:
+        data = pickle.load(open(fname,'rb'))
+    except err:
+        warnings.warn("Pickle file did not exist. Creating it.")
+        data = {}
     for key in v.keys():
+        if key in data.keys():
+            warnings.warn("Overwriting variable \"%s.\"" %key)
         data[key] = v[key]
     pickle.dump(data,open(fname,'wb'))
     return
@@ -92,6 +100,7 @@ def load_mat_file(dir,squeeze_me=True,variable_names={}):
         inData = sio.loadmat(dir,squeeze_me=squeeze_me,variable_names=variable_names)
     for key in inData.keys():
         backglobals[key] = inData[key]
+    print inData.keys()
     return
 
 def save_vars_v0(file):
