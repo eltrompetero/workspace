@@ -39,7 +39,9 @@ def add_to_pickle(v,fname):
         if key in data.keys():
             warnings.warn("Overwriting variable \"%s.\"" %key)
         data[key] = v[key]
-    pickle.dump(data,open(fname,'wb'))
+    out = open(fname,'wb')
+    pickle.dump(data,out)
+    out.close()
     return
 
 def load_pickle(dir,squeeze_me=True,variable_names={}):
@@ -86,7 +88,7 @@ def save_vars(fname):
 
     return
 
-def load_mat_file(dir,squeeze_me=True,variable_names={}):
+def load_mat_file(dir,squeeze_me=True,variable_names={},disp=True):
     import inspect
     import scipy.io as sio
     import numpy as np
@@ -100,7 +102,8 @@ def load_mat_file(dir,squeeze_me=True,variable_names={}):
         inData = sio.loadmat(dir,squeeze_me=squeeze_me,variable_names=variable_names)
     for key in inData.keys():
         backglobals[key] = inData[key]
-    print inData.keys()
+    if disp:
+        print inData.keys()
     return
 
 def save_vars_v0(file):
