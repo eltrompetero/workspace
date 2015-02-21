@@ -65,26 +65,38 @@ def load_pickle(dir,squeeze_me=True,variable_names={}):
     for key in inData.keys():
         backglobals[key] = inData[key]
     return inData.keys()
-
-def save_vars(fname):
+    
+def save_vars(variables,fname):
     """
-    2013-08-06
-        Save all int, float and numpy variables.
+    2014-02-21
+        Pickle given variables.
     """
-    import inspect
+    import inspect,pickle,warnings
     import scipy.io as sio
     import numpy as np
 
-    mdict = {}
     frame = inspect.currentframe()
     backglobals = frame.f_back.f_globals
-    for key in backglobals.keys():
-        t = type(backglobals[key])
-        if (not str.isupper(key) and not str.istitle(key)) and \
-            (t==np.ndarray or t==float or t==int):
-            exec('mdict['+'\''+key+'\'] = backglobals[\''+key+'\']')
-            print key
-    sio.savemat(fname,mdict)
+    locals = frame.f_locals
+    d = {}
+
+    for key in variables:
+        if key not in backglobals.keys():
+            warnings.warn('%s not in workspace.' % s)
+        else:
+            d[key] = backglobals[key]
+    pickle.dump(d,open(prefix+fname,'wb'))
+
+    #mdict = {}
+    #frame = inspect.currentframe()
+    #backglobals = frame.f_back.f_globals
+    #for key in backglobals.keys():
+    #    t = type(backglobals[key])
+    #    if (not str.isupper(key) and not str.istitle(key)) and \
+    #        (t==np.ndarray or t==float or t==int):
+    #        exec('mdict['+'\''+key+'\'] = backglobals[\''+key+'\']')
+    #        print key
+    #sio.savemat(fname,mdict)
 
     return
 
