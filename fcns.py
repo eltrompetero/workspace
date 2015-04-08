@@ -4,6 +4,15 @@ def save_plot_pickle(fname,vars,prefix='plotting/'):
     """
     Save pickle file for plotting in the local plotting directory.
     2014-03-07
+
+    Params:
+    -------
+    fname (str)
+        name of file including suffix
+    vars (dict)
+        dictionary of variables
+    prefix (str)
+        name of directory in current directory in which to place pickles
     """
     import inspect
     import pickle
@@ -66,10 +75,13 @@ def load_pickle(dir,squeeze_me=True,variable_names={}):
         backglobals[key] = inData[key]
     return inData.keys()
     
-def save_vars(variables,fname):
+def save_vars(variables,fname,prefix=''):
     """
     2014-02-21
         Pickle given variables.
+        variables: list of variable names
+        fname (str) : full name including suffix
+
     """
     import inspect,pickle,warnings
     import scipy.io as sio
