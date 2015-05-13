@@ -1,8 +1,8 @@
 # Workspace functions.
 
-def save_plot_pickle(fname,vars,prefix='plotting/'):
+def save_plot_pickle(fname,vars,prefix='plotting/',notDill=False):
     """
-    Save pickle file for plotting in the local plotting directory.
+    Save pickle file for plotting in the local plotting directory. Pickle extension not included by default in fname.
     2014-03-07
 
     Params:
@@ -15,7 +15,10 @@ def save_plot_pickle(fname,vars,prefix='plotting/'):
         name of directory in current directory in which to place pickles
     """
     import inspect
-    import pickle
+    if notDill:
+        import pickle
+    else:
+        import dill as pickle
     import warnings
 
     frame = inspect.currentframe()
