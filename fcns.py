@@ -31,7 +31,7 @@ def save_plot_pickle(fname,vars,prefix='plotting/',notDill=False):
             warnings.warn('%s not in workspace.' % s)
         else:
             d[key] = backglobals[key]
-    pickle.dump(d,open(prefix+fname,'wb'))
+    pickle.dump(d,open(prefix+fname,'wb'),-1)
     return
 
 def add_to_pickle(v,fname):
@@ -52,7 +52,7 @@ def add_to_pickle(v,fname):
             warnings.warn("Overwriting variable \"%s.\"" %key)
         data[key] = v[key]
     out = open(fname,'wb')
-    pickle.dump(data,out)
+    pickle.dump(data,out,-1)
     out.close()
     return
 
@@ -100,7 +100,7 @@ def save_vars(variables,fname,prefix=''):
             warnings.warn('%s not in workspace.' % s)
         else:
             d[key] = backglobals[key]
-    pickle.dump(d,open(prefix+fname,'wb'))
+    pickle.dump(d,open(prefix+fname,'wb'),-1)
 
     #mdict = {}
     #frame = inspect.currentframe()
