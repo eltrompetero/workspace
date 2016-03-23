@@ -1,4 +1,40 @@
 # Workspace functions.
+import numpy as np
+import hickle,inspect,cPickle
+
+# -------#
+# Hickle #
+# -------#
+def default_hickle(dictOfVars,fileName,compression='lzf'):
+    """
+    2016-03-22
+    """
+    hickle.dump(dictOfVars,fileName,compression=compression,mode='w')
+    return
+
+def load_hickle(dr,squeeze_me=True,variable_names={}):
+    """
+    Load variables in hickle to global workspace using keys as variable names.
+    2016-03-22
+    """
+    frame = inspect.currentframe()
+    backglobals = frame.f_back.f_globals
+
+    if len(variable_names)==0:
+        inData = hickle.load(dr)
+    else:
+        inData = hickle.load(dr)
+        for i in inData.keys():
+            if i not in variable_names:
+                del inData[i]
+    for key in inData.keys():
+        backglobals[key] = inData[key]
+    return inData.keys()
+
+
+# -------#
+# Pickle #
+# -------#
 
 def save_plot_pickle(fname,vars,prefix='plotting/',notDill=False):
     """
@@ -56,21 +92,18 @@ def add_to_pickle(v,fname):
     out.close()
     return
 
-def load_pickle(dir,squeeze_me=True,variable_names={}):
+def load_pickle(dr,squeeze_me=True,variable_names={}):
     """
-        Load variables in pickle to global workspace using keys as variable names.
+    Load variables in pickle to global workspace using keys as variable names.
     2014-05-07
     """
-    import inspect
-    import cPickle
-
     frame = inspect.currentframe()
     backglobals = frame.f_back.f_globals
 
     if len(variable_names)==0:
-        inData = cPickle.load(open(dir,"rb"))
+        inData = cPickle.load(open(dr,"rb"))
     else:
-        inData = cPickle.load(open(dir,"rb"))
+        inData = cPickle.load(open(dr,"rb"))
         for i in inData.keys():
             if i not in variable_names:
                 del inData[i]
