@@ -5,7 +5,7 @@ import hickle,inspect,cPickle
 # -------#
 # Hickle #
 # -------#
-def default_hickle(dictOfVars,fileName,compression='lzf'):
+def hickle_pickle(dictOfVars,fileName,compression='lzf'):
     """
     2016-03-22
     """
