@@ -9,7 +9,7 @@ def hickle_pickle(dictOfVars,fileName,compression='lzf'):
     """
     2016-03-22
     """
-    hickle.dump(dictOfVars,fileName,compression=compression,mode='w+')
+    hickle.dump(dictOfVars,fileName,compression=compression,mode='a')
     return
 
 def load_hickle(dr,squeeze_me=True,variable_names={}):
