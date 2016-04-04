@@ -1,6 +1,7 @@
 # Workspace functions.
 import numpy as np
 import hickle,inspect,cPickle
+import os
 
 # -------#
 # Hickle #
@@ -9,6 +10,8 @@ def hickle_pickle(dictOfVars,fileName,compression='lzf'):
     """
     2016-03-22
     """
+    if os.path.isfile(fileName):
+        os.remove(fileName)
     hickle.dump(dictOfVars,fileName,compression=compression,mode='a')
     return
 
