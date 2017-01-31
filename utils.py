@@ -98,21 +98,34 @@ def add_to_pickle(v,fname):
 def load_pickle(dr,squeeze_me=True,variable_names={}):
     """
     Load variables in pickle to global workspace using keys as variable names.
-    2014-05-07
+    2017-01-31
     """
     frame = inspect.currentframe()
     backglobals = frame.f_back.f_globals
-
-    if len(variable_names)==0:
-        inData = cPickle.load(open(dr,"rb"))
-    else:
-        inData = cPickle.load(open(dr,"rb"))
-        for i in inData.keys():
-            if i not in variable_names:
-                del inData[i]
-    for key in inData.keys():
-        backglobals[key] = inData[key]
-    return inData.keys()
+    
+    try:
+        if len(variable_names)==0:
+            inData = cPickle.load(open(dr,"rb"))
+        else:
+            inData = cPickle.load(open(dr,"rb"))
+            for i in inData.keys():
+                if i not in variable_names:
+                    del inData[i]
+        for key in inData.keys():
+            backglobals[key] = inData[key]
+        return inData.keys()
+    except AttributeError:
+        import dill
+        if len(variable_names)==0:
+            inData = dill.load(open(dr,"rb"))
+        else:
+            inData = dill.load(open(dr,"rb"))
+            for i in inData.keys():
+                if i not in variable_names:
+                    del inData[i]
+        for key in inData.keys():
+            backglobals[key] = inData[key]
+        return inData.keys()
     
 def save_vars(variables,fname,prefix=''):
     """
@@ -152,6 +165,9 @@ def save_vars(variables,fname,prefix=''):
     return
 
 def load_mat_file(dir,squeeze_me=True,variable_names={},disp=True):
+    """
+    Load .mat file variables directly into workspace.
+    """
     import inspect
     import scipy.io as sio
     import numpy as np
