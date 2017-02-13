@@ -95,6 +95,16 @@ def add_to_pickle(v,fname):
     out.close()
     return
 
+def dump_pickle(mdict,fname,use_pickle=False):
+    """
+    2017-02-12
+    """
+    if usepickle:
+        import pickle
+    else:
+        import dill as pickle
+    pickle.dump(mdict,open(fname,'wb'),-1)
+
 def load_pickle(dr,squeeze_me=True,variable_names={}):
     """
     Load variables in pickle to global workspace using keys as variable names.
