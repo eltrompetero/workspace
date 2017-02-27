@@ -2,6 +2,7 @@
 import numpy as np
 import hickle,inspect,cPickle
 import os
+import subprocess
 
 # -------#
 # Hickle #
@@ -105,11 +106,22 @@ def dump_pickle(mdict,fname,use_pickle=False):
         import dill as pickle
     pickle.dump(mdict,open(fname,'wb'),-1)
 
-def load_pickle(dr,squeeze_me=True,variable_names={}):
+def load_pickle(dr,date=False,variable_names={}):
     """
     Load variables in pickle to global workspace using keys as variable names.
-    2017-01-31
+    2017-02-27
+
+    Params:
+    -------
+    dr (str)
+    variable_names (dict)
+    date (bool=False)
+        Print file mod date if True.
     """
+    if date:
+        process = subprocess.Popen(('date -r %s'%dr).split(), stdout=subprocess.PIPE)
+        output,error = process.communicate()
+        print output
     frame = inspect.currentframe()
     backglobals = frame.f_back.f_globals
     
