@@ -1,6 +1,6 @@
 # Workspace functions.
 import numpy as np
-import hickle,inspect,cPickle
+import hickle,inspect,pickle
 import os
 import subprocess
 
@@ -28,12 +28,12 @@ def load_hickle(dr,squeeze_me=True,variable_names={}):
         inData = hickle.load(dr)
     else:
         inData = hickle.load(dr)
-        for i in inData.keys():
+        for i in list(inData.keys()):
             if i not in variable_names:
                 del inData[i]
-    for key in inData.keys():
+    for key in list(inData.keys()):
         backglobals[key] = inData[key]
-    return inData.keys()
+    return list(inData.keys())
 
 
 # -------#
@@ -67,7 +67,7 @@ def save_plot_pickle(fname,vars,prefix='plotting/',notDill=False):
     d = {}
 
     for key in vars:
-        if key not in backglobals.keys():
+        if key not in list(backglobals.keys()):
             warnings.warn('%s not in workspace.' % s)
         else:
             d[key] = backglobals[key]
@@ -79,7 +79,7 @@ def add_to_pickle(v,fname):
         Add elements in dictionary to existing pickle.
     2014-08-23
     """
-    import cPickle as pickle
+    import pickle as pickle
     import warnings
 
     try:
@@ -87,8 +87,8 @@ def add_to_pickle(v,fname):
     except err:
         warnings.warn("Pickle file did not exist. Creating it.")
         data = {}
-    for key in v.keys():
-        if key in data.keys():
+    for key in list(v.keys()):
+        if key in list(data.keys()):
             warnings.warn("Overwriting variable \"%s.\"" %key)
         data[key] = v[key]
     out = open(fname,'wb')
@@ -99,45 +99,45 @@ def add_to_pickle(v,fname):
 def load_pickle(dr,date=False,variable_names={}):
     """
     Load variables in pickle to global workspace using keys as variable names.
-    2017-02-27
 
-    Params:
-    -------
-    dr (str)
-    variable_names (dict)
-    date (bool=False)
+    Parameters:
+    -----------
+    dr : str
+    variable_names : dict
+    date : bool,False
         Print file mod date if True.
     """
     if date:
         process = subprocess.Popen(('date -r %s'%dr).split(), stdout=subprocess.PIPE)
         output,error = process.communicate()
-        print output
+        print(output)
     frame = inspect.currentframe()
     backglobals = frame.f_back.f_globals
     
     try:
-        if len(variable_names)==0:
-            inData = cPickle.load(open(dr,"rb"))
-        else:
-            inData = cPickle.load(open(dr,"rb"))
-            for i in inData.keys():
+        try:
+            inData=pickle.load(open(dr,'rb'))
+        except UnicodeDecodeError:
+            inData=pickle.load(open(dr,'rb'),encoding='latin1')
+        if len(variable_names)>0:
+            for i in list(inData.keys()):
                 if i not in variable_names:
                     del inData[i]
-        for key in inData.keys():
+        for key in list(inData.keys()):
             backglobals[key] = inData[key]
-        return inData.keys()
+        return list(inData.keys())
     except AttributeError:
         import dill
         if len(variable_names)==0:
             inData = dill.load(open(dr,"rb"))
         else:
             inData = dill.load(open(dr,"rb"))
-            for i in inData.keys():
+            for i in list(inData.keys()):
                 if i not in variable_names:
                     del inData[i]
-        for key in inData.keys():
+        for key in list(inData.keys()):
             backglobals[key] = inData[key]
-        return inData.keys()
+        return list(inData.keys())
 
 def load_mat_file(dir,squeeze_me=True,variable_names={},disp=True):
     """
@@ -154,9 +154,9 @@ def load_mat_file(dir,squeeze_me=True,variable_names={},disp=True):
         inData = sio.loadmat(dir,squeeze_me=squeeze_me)
     else:
         inData = sio.loadmat(dir,squeeze_me=squeeze_me,variable_names=variable_names)
-    for key in inData.keys():
+    for key in list(inData.keys()):
         backglobals[key] = inData[key]
     if disp:
-        print inData.keys()
+        print(list(inData.keys()))
     return
 
