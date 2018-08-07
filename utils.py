@@ -39,40 +39,21 @@ def load_hickle(dr,squeeze_me=True,variable_names={}):
 # -------#
 # Pickle #
 # -------#
+def pickle_temp(var_dict):
+    """Pickle given variables into local directory with a unique temp file name using uuid.
 
-def save_plot_pickle(fname,vars,prefix='plotting/',notDill=False):
+    Parameters
+    ----------
+    var_dict : dict
     """
-    Save pickle file for plotting in the local plotting directory. Pickle extension not included by default in fname.
-    2014-03-07
+    import pickle
+    from os import getcwd
+    from uuid import uuid4
+    
+    fname='%s/temp_%s.p'%(getcwd(),str(uuid4()).replace('-',''))
+    pickle.dump(var_dict,open(fname,'wb'),-1)
 
-    Params:
-    -------
-    fname (str)
-        name of file including suffix
-    vars (dict)
-        dictionary of variables
-    prefix (str)
-        name of directory in current directory in which to place pickles
-    """
-    import inspect
-    if notDill:
-        import pickle
-    else:
-        import dill as pickle
-    import warnings
-
-    frame = inspect.currentframe()
-    backglobals = frame.f_back.f_globals
-    locals = frame.f_locals
-    d = {}
-
-    for key in vars:
-        if key not in list(backglobals.keys()):
-            warnings.warn('%s not in workspace.' % s)
-        else:
-            d[key] = backglobals[key]
-    pickle.dump(d,open(prefix+fname,'wb'),-1)
-    return
+    print(fname)
 
 def add_to_pickle(v,fname):
     """
