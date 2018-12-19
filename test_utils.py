@@ -2,7 +2,18 @@ from .utils import *
 
 
 def test_cached():
-    @cached(maxsize=10)
+    # test use of maxsize setting
+    @cached
+    def f(x):
+        return x
+
+    for i in range(20):
+        f(i)
+    
+    assert np.array_equal([i for i in f.cache.values()], np.arange(20))
+
+    # test use of maxsize setting
+    @cached(10)
     def f(x):
         return x
 

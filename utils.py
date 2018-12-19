@@ -12,7 +12,7 @@ from functools import wraps
 # ========== #
 # Decorators
 # ========== #
-def cached(maxsize=128):
+def cached(iarg=None):
     """Save all last calls to function. This gives access to the cache dict unlike functools.lru_cache(). The
     outermost function is necessary to pass in keywork args into the decorator constructor which is really
     outer_wrap().
@@ -41,6 +41,12 @@ def cached(maxsize=128):
         wrapper.cache = cache
         wrapper.cacheSize = cacheSize
         return wrapper
+    
+    # if a kwarg was not set, just return a simple decorator
+    if callable(iarg):
+        maxsize = 128
+        return outer_wrap(iarg)
+    maxsize = iarg
     return outer_wrap
 
 
