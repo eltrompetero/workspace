@@ -43,30 +43,6 @@ def cached(maxsize=128):
         return wrapper
     return outer_wrap
 
-def _cached(maxsize=128):
-    """Save all last calls to function. This gives access to the cache dict unlike functools.lru_cache().
-    """
-    cache = {}
-    cacheSize = [0]
-
-    def outside_wrap(func):
-        @wraps(func)  # this makes inner function accessible from outside
-        def wrapper(*args, **kwargs):
-            try:
-                return cache[args]
-            except KeyError:
-                cache[args] = result = func(*args)
-                cacheSize[0] += 1
-
-                if cacheSize[0]>maxsize:
-                    del cache[next(iter(cache.keys()))]
-                return result
-    outside_wrap.cache = cache
-    outside_wrap.cacheSize = cacheSize
-    #outside_wrap.cache = wrapper
-    return outside_wrap
-
-
 
 # ------------------------ #
 # Saving workspace objects #
