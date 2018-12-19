@@ -12,7 +12,7 @@ from functools import wraps
 # ========== #
 # Decorators
 # ========== #
-def cached(iarg=None):
+def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None):
     """Save all last calls to function. This gives access to the cache dict unlike functools.lru_cache(). The
     outermost function is necessary to pass in keywork args into the decorator constructor which is really
     outer_wrap().
@@ -21,22 +21,42 @@ def cached(iarg=None):
     ----------
     maxsize : int
         Max number of elements allowed in cache.
+    iprint : bool, False
+        Print when adding to cache.
+    cache_pickle : str, None
+        Pass in file name from which to load cache.
     """
 
     def outer_wrap(func):
+        # try to load cache from given file
         cache = {}
         cacheSize = [0]
+        if not cache_pickle is None:
+            try:
+                data = pickle.load(open(cache_pickle, 'rb'))
+                # must explicitly load each element because hashes are randomized per session
+                for k in data['cache'].keys():
+                    cache[k] = data['cache'][k]
+                cacheSize = [len(cache.keys())]
+                if iprint: print("Loaded cache from file.")
+            except FileNotFoundError:
+                print("Pickled cache file not found.")
+            except KeyError:
+                print("Invalid pickled cache file.")
 
         @wraps(func)  # this makes inner function accessible from outside
         def wrapper(*args, **kwargs):
             try:
                 return cache[args]
             except KeyError:
+                if iprint: print("Adding to cache.")
                 cache[args] = result = func(*args)
                 cacheSize[0] += 1
 
                 if cacheSize[0]>maxsize:
+                    if iprint: print("Deleting from cache.")
                     del cache[next(iter(cache.keys()))]
+                    cacheSize[0] -= 1
                 return result
         wrapper.cache = cache
         wrapper.cacheSize = cacheSize
@@ -44,9 +64,7 @@ def cached(iarg=None):
     
     # if a kwarg was not set, just return a simple decorator
     if callable(iarg):
-        maxsize = 128
         return outer_wrap(iarg)
-    maxsize = iarg
     return outer_wrap
 
 

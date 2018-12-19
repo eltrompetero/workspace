@@ -13,12 +13,12 @@ def test_cached():
     assert np.array_equal([i for i in f.cache.values()], np.arange(20))
 
     # test use of maxsize setting
-    @cached(10)
+    @cached(maxsize=10)
     def f(x):
         return x
 
     for i in range(20):
         f(i)
 
-    assert f.cacheSize[0]==20
+    assert f.cacheSize[0]==10
     assert np.array_equal([i for i in f.cache.values()], np.arange(10,20))
