@@ -1,12 +1,16 @@
-# Workspace functions.
+# =============================================================================================== #
+# Handy workspace functions.
+# Written by Eddie Lee, edlee@alumni.princeton.edu
+# =============================================================================================== #
 import numpy as np
 import hickle,inspect,pickle
 import os
 import subprocess
 
-# -------#
-# Hickle #
-# -------#
+
+# ------------------------ #
+# Saving workspace objects #
+# ------------------------ #
 def hickle_pickle(dictOfVars,fileName,compression='lzf'):
     """
     2016-03-22
@@ -35,10 +39,6 @@ def load_hickle(dr,squeeze_me=True,variable_names={}):
         backglobals[key] = inData[key]
     return list(inData.keys())
 
-
-# -------#
-# Pickle #
-# -------#
 def pickle_temp(var_dict):
     """Pickle given variables into local directory with a unique temp file name using uuid.
 
@@ -57,8 +57,7 @@ def pickle_temp(var_dict):
 
 def add_to_pickle(v,fname):
     """
-        Add elements in dictionary to existing pickle.
-    2014-08-23
+    Add elements in dictionary to existing pickle.
     """
     import pickle as pickle
     import warnings
@@ -75,7 +74,6 @@ def add_to_pickle(v,fname):
     out = open(fname,'wb')
     pickle.dump(data,out,-1)
     out.close()
-    return
 
 def load_pickle(dr,date=False,variable_names={}):
     """
