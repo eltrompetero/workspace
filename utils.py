@@ -40,9 +40,9 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None):
                 cacheSize = [len(cache.keys())]
                 if iprint: print("Loaded cache from file.")
             except FileNotFoundError:
-                print("Pickled cache file not found.")
+                if iprint: print("Pickled cache file not found.")
             except KeyError:
-                print("Invalid pickled cache file.")
+                if iprint: print("Invalid pickled cache file.")
 
         @wraps(func)  # this makes inner function accessible from outside
         def wrapper(*args, **kwargs):
