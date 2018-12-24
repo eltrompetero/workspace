@@ -17,6 +17,9 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
     """Save all last calls to function. This gives access to the cache dict unlike
     functools.lru_cache(). The outermost function is necessary to pass in keywork args
     into the decorator constructor which is really outer_wrap().
+    
+    NOTE: use inspect.getargspec to read in default keyword arguments as part of call in
+    cache
 
     Parameters
     ----------
@@ -49,6 +52,15 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
 
         @wraps(func)  # this makes inner function accessible from outside
         def wrapper(*args, **kwargs):
+            # get all default kwargs for func
+            argspec = inspect.getfullargspec(func)
+            if not argspec.defaults is None:
+                # if default kwarg is not specified then put in default kwarg value
+                argspeckwargs = argspec.args[-len(argspec.defaults):]
+                for i,k in enumerate(argspeckwargs):
+                    if not k in kwargs.keys():
+                        kwargs[k] = argspec.defaults[i]
+
             try:
                 return cache[(args, frozenset(kwargs))]
             except KeyError:
