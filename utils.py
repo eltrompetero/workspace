@@ -55,6 +55,12 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
             # get all default kwargs for func
             argspec = inspect.getfullargspec(func)
             if not argspec.defaults is None:
+                # handle kwargs that are passed in as args
+                if len(args)>(len(argspec.args)-len(argspec.defaults)):
+                    for argix in range(len(argspec.args)-len(argspec.defaults),len(args)):
+                        kwargs[argspec.args[argix]] = args[argix]
+                    args = args[:len(argspec.args)-len(argspec.defaults)]
+
                 # if default kwarg is not specified then put in default kwarg value
                 argspeckwargs = argspec.args[-len(argspec.defaults):]
                 for i,k in enumerate(argspeckwargs):
