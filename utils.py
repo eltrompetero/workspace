@@ -7,6 +7,7 @@ import hickle, inspect, pickle, dill
 import os
 import subprocess
 from functools import wraps
+from pickle import PicklingError
 
 
 # ========== #
