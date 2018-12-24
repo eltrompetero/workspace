@@ -3,7 +3,7 @@
 # Written by Eddie Lee, edlee@alumni.princeton.edu
 # =============================================================================================== #
 import numpy as np
-import hickle,inspect,pickle
+import hickle, inspect, pickle, dill
 import os
 import subprocess
 from functools import wraps
@@ -12,10 +12,10 @@ from functools import wraps
 # ========== #
 # Decorators
 # ========== #
-def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None):
-    """Save all last calls to function. This gives access to the cache dict unlike functools.lru_cache(). The
-    outermost function is necessary to pass in keywork args into the decorator constructor which is really
-    outer_wrap().
+def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
+    """Save all last calls to function. This gives access to the cache dict unlike
+    functools.lru_cache(). The outermost function is necessary to pass in keywork args
+    into the decorator constructor which is really outer_wrap().
 
     Parameters
     ----------
@@ -25,6 +25,8 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None):
         Print when adding to cache.
     cache_pickle : str, None
         Pass in file name from which to load cache.
+    write : bool, True
+        If True, write cache to file. Only works if cache_pickle is specified.
     """
 
     def outer_wrap(func):
@@ -47,16 +49,26 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None):
         @wraps(func)  # this makes inner function accessible from outside
         def wrapper(*args, **kwargs):
             try:
-                return cache[args]
+                return cache[(args, frozenset(kwargs))]
             except KeyError:
                 if iprint: print("Adding to cache.")
-                cache[args] = result = func(*args)
+                cache[(args,frozenset(kwargs.items()))] = result = func(*args, **kwargs)
                 cacheSize[0] += 1
 
                 if cacheSize[0]>maxsize:
                     if iprint: print("Deleting from cache.")
                     del cache[next(iter(cache.keys()))]
                     cacheSize[0] -= 1
+
+                if write and cache_pickle:
+                    try:
+                        pickle.dump({'cache':cache}, open(cache_pickle,'wb'), -1)
+                    except AttributeError:
+                        dill.dump({'cache':cache}, open(cache_pickle,'wb'), -1)
+                    except PicklingError:
+                        dill.dump({'cache':cache}, open(cache_pickle,'wb'), -1)
+                    except FileNotFoundError:
+                        if iprint: print("Cannot write to cache file.")
                 return result
         wrapper.cache = cache
         wrapper.cacheSize = cacheSize
