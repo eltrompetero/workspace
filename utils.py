@@ -52,6 +52,8 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
 
         @wraps(func)  # this makes inner function accessible from outside
         def wrapper(*args, **kwargs):
+            kwargs = kwargs.copy()
+
             # get all default kwargs for func
             argspec = inspect.getfullargspec(func)
             if not argspec.defaults is None:
@@ -66,9 +68,15 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
                 for i,k in enumerate(argspeckwargs):
                     if not k in kwargs.keys():
                         kwargs[k] = argspec.defaults[i]
-
+            
+            ## handle ndarrays that are not hashable
+            #for k in kwargs.keys():
+            #    if type(k) is np.ndarray:
+            #        kwargs[k] = tuple(kwargs[k])
+            
+            print(args, frozenset(kwargs.items()))
             try:
-                return cache[(args, frozenset(kwargs))]
+                return cache[(args, frozenset(kwargs.items()))]
             except KeyError:
                 if iprint: print("Adding to cache.")
                 cache[(args,frozenset(kwargs.items()))] = result = func(*args, **kwargs)
