@@ -74,7 +74,6 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
             #    if type(k) is np.ndarray:
             #        kwargs[k] = tuple(kwargs[k])
             
-            print(args, frozenset(kwargs.items()))
             try:
                 return cache[(args, frozenset(kwargs.items()))]
             except KeyError:
@@ -216,6 +215,27 @@ def load_pickle(dr,date=False,variable_names={}):
         for key in list(inData.keys()):
             backglobals[key] = inData[key]
         return list(inData.keys())
+
+def save_pickle(vardict, fname, overwrite=False, force_pickle=False):
+    """
+    Parameters
+    ----------
+    vardict : dict
+    fname : str
+    overwrite : bool, False
+    force_pickle : bool, False
+
+    Returns
+    -------
+    """
+
+    if os.path.isfile(fname) and not overwrite:
+        raise Exception("File already exists.")
+    
+    if force_pickle:
+        pickle.dump(vardict, open(fname,'wb'), -1)
+    else:
+        dill.dump(vardict, open(fname,'wb'), -1)
 
 def load_mat_file(dir,squeeze_me=True,variable_names={},disp=True):
     """
