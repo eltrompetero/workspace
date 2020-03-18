@@ -1,7 +1,7 @@
-# =============================================================================================== #
+# ====================================================================================== #
 # Handy workspace functions.
 # Written by Eddie Lee, edlee@alumni.princeton.edu
-# =============================================================================================== #
+# ====================================================================================== #
 import numpy as np
 import hickle, inspect, pickle, dill
 import os
@@ -216,11 +216,11 @@ def load_pickle(dr,date=False,variable_names={}):
             backglobals[key] = inData[key]
         return list(inData.keys())
 
-def save_pickle(vardict, fname, overwrite=False, force_pickle=False):
+def save_pickle(varnames, fname, overwrite=False, force_pickle=False):
     """
     Parameters
     ----------
-    vardict : dict
+    varnames : list of str
     fname : str
     overwrite : bool, False
     force_pickle : bool, False
@@ -231,6 +231,10 @@ def save_pickle(vardict, fname, overwrite=False, force_pickle=False):
 
     if os.path.isfile(fname) and not overwrite:
         raise Exception("File already exists.")
+
+    vardict = {}
+    for n in varnames:
+        vardict[n] = globals()[n]
     
     if force_pickle:
         pickle.dump(vardict, open(fname,'wb'), -1)
