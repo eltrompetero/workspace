@@ -231,10 +231,11 @@ def save_pickle(varnames, fname, overwrite=False, force_pickle=False):
 
     if os.path.isfile(fname) and not overwrite:
         raise Exception("File already exists.")
-
+        
+    frame = inspect.currentframe()
     vardict = {}
     for n in varnames:
-        vardict[n] = globals()[n]
+        vardict[n] = frame.f_back.f_locals[n]
     
     if force_pickle:
         pickle.dump(vardict, open(fname,'wb'), -1)
