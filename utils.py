@@ -3,11 +3,13 @@
 # Written by Eddie Lee, edlee@alumni.princeton.edu
 # ====================================================================================== #
 import numpy as np
-import hickle, inspect, pickle, dill
+import hickle, inspect
+import dill as pickle
 import os
 import subprocess
 from functools import wraps
 from pickle import PicklingError
+
 
 
 # ========== #
@@ -173,17 +175,17 @@ def add_to_pickle(v,fname):
     pickle.dump(data,out,-1)
     out.close()
 
-def load_pickle(dr,date=False,variable_names={}):
-    """
-    Load variables in pickle to global workspace using keys as variable names.
+def load_pickle(dr, date=False, variable_names={}):
+    """Load variables in pickle to global workspace using keys as variable names.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     dr : str
-    variable_names : dict
     date : bool,False
         Print file mod date if True.
+    variable_names : dict
     """
+
     if date:
         process = subprocess.Popen(('date -r %s'%dr).split(), stdout=subprocess.PIPE)
         output,error = process.communicate()
@@ -192,38 +194,24 @@ def load_pickle(dr,date=False,variable_names={}):
     backglobals = frame.f_back.f_globals
     
     try:
-        try:
-            inData=pickle.load(open(dr,'rb'))
-        except UnicodeDecodeError:
-            inData=pickle.load(open(dr,'rb'),encoding='latin1')
-        if len(variable_names)>0:
-            for i in list(inData.keys()):
-                if i not in variable_names:
-                    del inData[i]
-        for key in list(inData.keys()):
-            backglobals[key] = inData[key]
-        return list(inData.keys())
-    except AttributeError:
-        import dill
-        if len(variable_names)==0:
-            inData = dill.load(open(dr,"rb"))
-        else:
-            inData = dill.load(open(dr,"rb"))
-            for i in list(inData.keys()):
-                if i not in variable_names:
-                    del inData[i]
-        for key in list(inData.keys()):
-            backglobals[key] = inData[key]
-        return list(inData.keys())
+        inData = pickle.load(open(dr, 'rb'))
+    except UnicodeDecodeError:
+        inData = pickle.load(open(dr, 'rb'), encoding='latin1')
+    if len(variable_names)>0:
+        for i in list(inData.keys()):
+            if i not in variable_names:
+                del inData[i]
+    for key in list(inData.keys()):
+        backglobals[key] = inData[key]
+    return list(inData.keys())
 
-def save_pickle(varnames, fname, overwrite=False, force_pickle=False):
+def save_pickle(varnames, fname, overwrite=False):
     """
     Parameters
     ----------
     varnames : list of str
     fname : str
     overwrite : bool, False
-    force_pickle : bool, False
 
     Returns
     -------
@@ -237,10 +225,7 @@ def save_pickle(varnames, fname, overwrite=False, force_pickle=False):
     for n in varnames:
         vardict[n] = frame.f_back.f_locals[n]
     
-    if force_pickle:
-        pickle.dump(vardict, open(fname,'wb'), -1)
-    else:
-        dill.dump(vardict, open(fname,'wb'), -1)
+    pickle.dump(vardict, open(fname,'wb'), -1)
 
 def load_mat_file(dir,squeeze_me=True,variable_names={},disp=True):
     """
