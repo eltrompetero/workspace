@@ -155,25 +155,31 @@ def pickle_temp(var_dict):
 
     print(fname)
 
-def add_to_pickle(v,fname):
-    """
-    Add elements in dictionary to existing pickle.
-    """
-    import pickle as pickle
-    import warnings
+def add_to_pickle(v, fname, force=False):
+    """Add elements in dictionary to existing pickle.
 
-    try:
-        data = pickle.load(open(fname,'rb'))
-    except err:
-        warnings.warn("Pickle file did not exist. Creating it.")
-        data = {}
-    for key in list(v.keys()):
-        if key in list(data.keys()):
+    Parameters
+    ----------
+    v : dict
+    fname : str
+    force : bool, False
+        If True, overwrite any existing variables.
+    """
+
+    import warnings
+    
+    assert os.path.isfile(fname)
+    data = pickle.load(open(fname,'rb'))
+
+    for key in v.keys():
+        if key in data.keys() and not force:
+            raise Exception("Variable already exists.")
+        elif key in data.keys():
             warnings.warn("Overwriting variable \"%s.\"" %key)
         data[key] = v[key]
-    out = open(fname,'wb')
-    pickle.dump(data,out,-1)
-    out.close()
+
+    with open(fname, 'wb') as out:
+        pickle.dump(data, out, -1)
 
 def load_pickle(dr, date=False, variable_names={}):
     """Load variables in pickle to global workspace using keys as variable names.
