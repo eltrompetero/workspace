@@ -111,6 +111,28 @@ def cached(iarg=None, maxsize=128, iprint=False, cache_pickle=None, write=True):
 # ------------------------ #
 # Saving workspace objects #
 # ------------------------ #
+def increment_name(fname, path='.', counter=1):
+    """Append a number to end of fname to return a pickle name that does not exist on
+    given path.
+
+    Parameters
+    ----------
+    fname : str
+    path : str, '.'
+    counter : int, 1
+
+    Returns
+    -------
+    str
+        path/fname{counter}.p
+    """
+
+    fname = f'{path}/{fname}{counter}.p'
+    while os.path.isfile(fname):
+        counter += 1
+        fname = f'{path}/{fname}{counter}.p'
+    return fname
+
 def hickle_pickle(dictOfVars,fileName,compression='lzf'):
     """
     2016-03-22
